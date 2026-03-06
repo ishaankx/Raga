@@ -1,4 +1,7 @@
-# Dockerfile  (repo ROOT — used by Render)
+# services/api/Dockerfile
+# Build context = services/api/ so all paths are relative to that folder.
+# In Render: Root Directory = services/api, Dockerfile Path = ./Dockerfile
+
 FROM python:3.10-slim
 
 WORKDIR /app
@@ -10,29 +13,28 @@ RUN apt-get update \
        curl \
     && rm -rf /var/lib/apt/lists/*
 
-COPY services/api/requirements.txt ./requirements.txt
+# requirements.txt is in services/api/ — just copy it directly
+COPY requirements.txt .
 
 RUN pip install --upgrade pip
 
-# CPU-only torch — much smaller than the default CUDA build
+# CPU-only torch to stay within Render free tier memory
 RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Pre-download the embedding model at BUILD time (not startup)
-# NOTE: Cross-encoder reranker (~300MB) is intentionally excluded here.
-# Render free tier has 512MB RAM — loading both models at startup causes OOM (exit 137).
-# Set RERANK_MODEL="" in Render env vars to disable it, or upgrade to a paid plan.
+# Pre-download embedding model at build time (not at startup)
+# Cross-encoder excluded — uses ~300MB RAM, exceeds Render free 512MB limit
 RUN python - <<'PY'
 from sentence_transformers import SentenceTransformer
 SentenceTransformer("all-MiniLM-L6-v2")
 print("Embedding model pre-loaded OK")
 PY
 
-COPY services/api/ .
+# Copy all files in services/api/ into the container (main.py etc.)
+COPY . .
 
 EXPOSE 10000
 
-# KEY FIX: Render injects $PORT (usually 10000). Hardcoding 8000 causes
-# "No open ports detected" because Render scans $PORT, not 8000.
+# $PORT is injected by Render — must use it or Render kills container
 CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-10000} --workers 1"]
