@@ -1,0 +1,4 @@
+invoice_no,customer,amount,currency,issue_date,due_date,status,notes
+INV-1001,Acme Corp,1234.56,INR,2024-11-01,2024-11-30,open,first invoice for Acme
+INV-1002,Acme Corp,500.00,INR,2024-10-01,2024-10-31,paid,paid via bank transfer
+INV-2001,Beta Ltd,2500.00,INR,2025-01-05,2025-02-04,open,monthly subscription

@@ -1,0 +1,30 @@
+# ── Secrets — NEVER commit these ──────────────────────────────────────────────
+.env
+.env.*
+!.env.example          # example template is safe to commit
+.env.dev
+
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+dist/
+*.so
+
+# ── Node / Frontend ───────────────────────────────────────────────────────────
+node_modules/
+frontend/dist/
+frontend/.vite/
+*.tsbuildinfo
+
+# ── Docker volumes / local data ───────────────────────────────────────────────
+services/ingestion/data/*.txt
+qdrant_storage/
+pgdata/
+
+# ── OS ────────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp

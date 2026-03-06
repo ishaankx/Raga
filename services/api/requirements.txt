@@ -1,0 +1,17 @@
+fastapi
+uvicorn[standard]==0.22.0
+qdrant-client==1.17.0
+sentence-transformers
+pydantic
+requests==2.31.0
+python-multipart==0.0.6
+google-genai
+psycopg2-binary==2.9.10
+prometheus-client==0.16.0
+numpy==1.26.2
+# CPU-only torch - use PyTorch CPU wheel index (keeps image small)
+torch
+huggingface-hub
+
+
+
