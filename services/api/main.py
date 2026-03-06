@@ -41,6 +41,7 @@ RERANK_MODEL    = os.getenv("RERANK_MODEL", "cross-encoder/ms-marco-MiniLM-L-6-v
 MAX_CONTEXT_CHARS = int(os.getenv("MAX_CONTEXT_CHARS", "3000"))
 DOC_K           = int(os.getenv("DOC_K", "4"))
 
+
 # ─────────────────────────────────────────────
 # Client init
 # ─────────────────────────────────────────────
@@ -69,8 +70,8 @@ async def global_exception_handler(request: Request, exc: Exception):
         status_code=500,
         content={"detail": f"{type(exc).__name__}: {exc}"},
     )
-
-qdrant   = QdrantClient(url=QDRANT_URL)
+QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
+qdrant = QdrantClient(url=QDRANT_URL, api_key=os.getenv("QDRANT_API_KEY") or None)
 embedder = SentenceTransformer(EMBED_MODEL)
 
 reranker = None
