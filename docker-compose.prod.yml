@@ -1,0 +1,33 @@
+# docker-compose.prod.yml
+# Used by Render / any VPS for production.
+# Postgres and Qdrant are hosted externally (Supabase + Qdrant Cloud).
+# Only the API and ingestion services run as containers here.
+
+services:
+  api:
+    build:
+      context: ./services/api
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    env_file: .env          # production .env (set via Render env vars, never committed)
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/metrics"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  ingestion:
+    build:
+      context: ./services/ingestion
+      dockerfile: Dockerfile
+    env_file: .env
+    environment:
+      - INGEST_DATA_DIR=/app/data
+    volumes:
+      - ./services/ingestion/data:/app/data:ro
+    # Ingestion is a one-shot job — it exits after indexing completes
+    restart: "no"
+    depends_on:
+      - api
