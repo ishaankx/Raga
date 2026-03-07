@@ -10,7 +10,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("ingest")
 
 # Config (override with env or .env.dev)
-QDRANT_URL = os.getenv("QDRANT_URL", "http://qdrant:6333")
+QDRANT_URL = os.getenv("QDRANT_URL")
+QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
 EMBED_MODEL = os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
 COLLECTION = os.getenv("COLLECTION_NAME", "cinntra_docs")
 # default to repository path for dev convenience
@@ -25,7 +26,7 @@ logger.info("Ingest config: QDRANT_URL=%s EMBED_MODEL=%s COLLECTION=%s DATA_DIR=
 os.makedirs(DATA_DIR, exist_ok=True)
 
 # clients
-client = QdrantClient(url=QDRANT_URL)
+client = QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY or None)
 embedder = SentenceTransformer(EMBED_MODEL)
 
 
